@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8a537fea5b00ab0458197650139e6125
+timeCreated: 1466049258
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 65171
+  packageName: Little Sword Fighter
+  packageVersion: 1.0
+  assetPath: Assets/Little Sword Fighter/Materials/char_body.mat
+  uploadId: 122831

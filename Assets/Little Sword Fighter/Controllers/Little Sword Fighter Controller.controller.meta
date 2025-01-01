@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f1c5e49953b8a9045b1d42f93ddff557
+timeCreated: 1466049450
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 65171
+  packageName: Little Sword Fighter
+  packageVersion: 1.0
+  assetPath: Assets/Little Sword Fighter/Controllers/Little Sword Fighter Controller.controller
+  uploadId: 122831
