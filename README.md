@@ -26,7 +26,7 @@
 
 ## **Current UML Diagram**
 
-![UML Diagram](uml-diagram.png)  
+![UML Diagram](Images/ghost_slayer_uml.png)  
 
 ---
 
