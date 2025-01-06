@@ -17,6 +17,10 @@
   - Medium: Spread out and slightly hidden.
   - Hard: Hidden in difficult-to-reach areas or requiring puzzle-solving to access.
 
+The map isn't finish, here is the map at the moment:
+![Game Map](Images/map.png)
+
+
 ### 3. **What are the main behaviors of the objects in your game?**
 - **Describe in detail how these objects behave, including interactions with non-player characters (NPCs).**  
   - Switches can be activated by players to turn lights on or off, open doors, or trigger traps.  
