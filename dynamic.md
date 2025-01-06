@@ -23,10 +23,15 @@
   - Ghosts move through the environment, obstructing the player's progress and sometimes chasing them.  
   - NPCs may provide hints or distractions, depending on the game's storyline.
 
-### 4. **Is there a rule system to limit object compatibility with your game?**
-- **Is it permanent (restricted within the game) or temporary (changeable during gameplay)?**  
-  - Switches must be attached to surfaces like walls, ceilings, or furniture and cannot float in midair.  
-  - Prices for purchasable items are determined by their rarity and impact on gameplay.
+### 4. Does your game have an economic system that can fit its design?
+
+**Economic System:**  
+- The game features an **internal economic system** based on coins collected during gameplay. Players can use these coins to purchase upgrades such as gadgets, skins, and additional abilities.  
+
+**Pricing Details:**  
+- Prices are determined by the item’s **rarity** and its **impact on gameplay**:  
+  - **Cosmetic items** like skins are cheaper.  
+  - **Ability-enhancing items** such as higher jumps or improved lighting are more expensive.  
 
 ### 5. **What and how much information do you check about the player's state?**
 - **What checkpoints or indicators show the player’s progress?**  
