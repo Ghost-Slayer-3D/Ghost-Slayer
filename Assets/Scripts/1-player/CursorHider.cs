@@ -17,7 +17,7 @@ public class CursorHider : MonoBehaviour
         if (toggleCursorAction == null)
             toggleCursorAction = new InputAction(type: InputActionType.Button);
         if (toggleCursorAction.bindings.Count == 0)
-            toggleCursorAction.AddBinding("<Mouse>/leftButton");
+            toggleCursorAction.AddBinding("<Mouse>/rightButton");
     }
 
 
