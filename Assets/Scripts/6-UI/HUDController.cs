@@ -2,21 +2,35 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro; // For TextMeshPro support
 
+/// <summary>
+/// Controls the HUD display for hearts, batteries, and coins.
+/// Updates UI based on player status and score.
+/// </summary>
 public class HUDController : MonoBehaviour
 {
+    // -------------------------------
+    // Serialized Fields
+    // -------------------------------
+
     [Header("Heart Settings")]
-    public Image[] heartImages;             // Heart UI images
-    public Sprite fullHeartSprite;          // Sprite for full heart
-    public Sprite emptyHeartSprite;         // Sprite for empty heart
+    [SerializeField] private Image[] heartImages;          // Heart UI images
+    [SerializeField] private Sprite fullHeartSprite;       // Sprite for full heart
+    [SerializeField] private Sprite emptyHeartSprite;      // Sprite for empty heart
 
     [Header("Battery Settings")]
-    public Image batteryImage;              // Battery UI image
-    public Sprite[] batterySprites;         // Sprites for battery levels (3, 2, 1, 0)
+    [SerializeField] private Image batteryImage;           // Battery UI image
+    [SerializeField] private Sprite[] batterySprites;      // Sprites for battery levels (3, 2, 1, 0)
 
     [Header("Coins Settings")]
-    public TMP_Text coinsText;              // Text for coins
+    [SerializeField] private TMP_Text coinsText;           // Text for displaying coins
 
+    // -------------------------------
+    // Unity Methods
+    // -------------------------------
 
+    /// <summary>
+    /// Subscribes to events and initializes the HUD at the start.
+    /// </summary>
     private void Start()
     {
         // Subscribe to GameManager updates
@@ -30,24 +44,38 @@ public class HUDController : MonoBehaviour
         UpdateCoins(ScoreManager.Instance.GetCoins()); // Initialize coin count
     }
 
+    /// <summary>
+    /// Unsubscribes from events to prevent memory leaks.
+    /// </summary>
     private void OnDestroy()
     {
-        // Unsubscribe to avoid memory leaks
         if (GameManager.Instance != null)
+        {
             GameManager.Instance.onHUDUpdateCallback -= UpdateHUD;
+        }
 
         if (ScoreManager.Instance != null)
+        {
             ScoreManager.Instance.onCoinsChangedCallback -= UpdateCoins;
+        }
     }
 
-    // Updates the HUD for hearts and batteries
+    // -------------------------------
+    // HUD Updates
+    // -------------------------------
+
+    /// <summary>
+    /// Updates the entire HUD (hearts and batteries).
+    /// </summary>
     public void UpdateHUD()
     {
         UpdateHearts();
         UpdateBattery();
     }
 
-    // Update the heart UI
+    /// <summary>
+    /// Updates the heart UI based on the current health.
+    /// </summary>
     private void UpdateHearts()
     {
         int currentHearts = GameManager.Instance.GetCurrentHearts();
@@ -65,13 +93,19 @@ public class HUDController : MonoBehaviour
         }
     }
 
-    // Update the battery UI
+    /// <summary>
+    /// Updates the battery UI based on the current battery level.
+    /// </summary>
     private void UpdateBattery()
     {
         int currentBatteries = GameManager.Instance.GetCurrentBatteries();
         batteryImage.sprite = batterySprites[currentBatteries];
     }
 
+    /// <summary>
+    /// Updates the coins UI text.
+    /// </summary>
+    /// <param name="coins">The updated coin count.</param>
     private void UpdateCoins(int coins)
     {
         coinsText.text = $"{coins}"; // Displays coins properly

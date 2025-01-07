@@ -18,7 +18,7 @@ public class PickupController : MonoBehaviour
         // Check if the colliding object is the player
         if (other.CompareTag("Player"))
         {
-            if (CanPickup())  // Check if pickup is allowed
+            if (CanPickup()) // Check if pickup is allowed
             {
                 HandlePickup();
                 Destroy(gameObject); // Destroy the pickup
