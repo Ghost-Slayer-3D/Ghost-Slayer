@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro; // Ensure TextMeshPro is included
 
 public class VillagerInteraction : MonoBehaviour
 {
     [SerializeField] private float interactionRange = 3f; // Range to detect villagers
+    [SerializeField] private TextMeshProUGUI interactionText; // Reference to TMP text in UI
 
     private InputAction interactAction; // Input system action
     private Villager currentVillager;
@@ -34,7 +36,6 @@ public class VillagerInteraction : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-
             // Look for a Villager component
             Villager villager = hit.GetComponent<Villager>();
             if (villager != null)
@@ -44,8 +45,15 @@ public class VillagerInteraction : MonoBehaviour
             }
         }
 
-        if (currentVillager == null)
+        // Show or hide interaction text based on villager presence
+        if (currentVillager != null)
         {
+            interactionText.text = "Press E to interact";
+            interactionText.gameObject.SetActive(true);
+        }
+        else
+        {
+            interactionText.gameObject.SetActive(false);
         }
     }
 
@@ -55,9 +63,6 @@ public class VillagerInteraction : MonoBehaviour
         if (currentVillager != null)
         {
             currentVillager.Interact();
-        }
-        else
-        {
         }
     }
 }
