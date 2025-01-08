@@ -12,6 +12,9 @@ public class WebGLVideoPlayer : MonoBehaviour
 
     void Start()
     {
+        // Hide all debug logs
+        Debug.unityLogger.logEnabled = false;
+
         // Make sure the VideoPlayer is set to URL source in the Inspector
         videoPlayer.source = VideoSource.Url;
 
