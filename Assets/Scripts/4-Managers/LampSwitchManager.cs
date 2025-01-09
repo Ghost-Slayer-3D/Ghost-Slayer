@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 
 /**
- * This component acts as a switch to toggle a group of lamps when activated.
+ * This component acts as a switch to toggle a group of lamps when activated
+ * and replaces a question mark object with another prefab upon activation.
  */
 [RequireComponent(typeof(BoxCollider))] // Requires a BoxCollider for collision
 public class LampSwitchManager : MonoBehaviour
@@ -16,12 +17,20 @@ public class LampSwitchManager : MonoBehaviour
     [Tooltip("Reference to the Switch Counter Manager.")]
     [SerializeField] private SwitchCounterManager switchCounterManager; // Counter reference.
 
+    [Header("Player Reference")]
     [Tooltip("Reference to the player object.")]
     [SerializeField] private Transform player;
 
+    [Header("Question Mark Replacement")]
+    [Tooltip("The question mark game object to be replaced.")]
+    [SerializeField] private GameObject questionMarkObject;
+
+    [Tooltip("The replacement prefab that will appear.")]
+    [SerializeField] private GameObject replacementPrefab;
+
     private InputAction toggleLightAction; // Input action for toggling lights
     private bool isOn = false; // State of the switch (on/off)
-    private bool isPlayerInRange = false; // NEW: Tracks if player is inside collider range
+    private bool isPlayerInRange = false; // Tracks if player is inside collider range
 
     private void OnEnable()
     {
@@ -36,6 +45,7 @@ public class LampSwitchManager : MonoBehaviour
     private void OnDisable()
     {
         toggleLightAction.Disable();
+        toggleLightAction.performed -= TryToggleSwitch;
     }
 
     private void Start()
@@ -78,10 +88,36 @@ public class LampSwitchManager : MonoBehaviour
             }
         }
 
+        // Replace the question mark with the new prefab
+        ReplaceQuestionMark();
+
         // Notify the SwitchCounterManager
         if (switchCounterManager != null)
         {
             switchCounterManager.RegisterSwitchActivation(); // Update the counter
+        }
+    }
+
+    /**
+     * Replaces the question mark object with a prefab at the same position and rotation.
+     */
+    private void ReplaceQuestionMark()
+    {
+        if (questionMarkObject != null && replacementPrefab != null)
+        {
+            // Get the position and rotation of the question mark
+            Vector3 position = questionMarkObject.transform.position;
+            Quaternion rotation = questionMarkObject.transform.rotation;
+
+            // Destroy the question mark object
+            Destroy(questionMarkObject);
+
+            // Instantiate the replacement prefab at the same position and rotation
+            Instantiate(replacementPrefab, position, rotation);
+        }
+        else
+        {
+            Debug.LogWarning("Question Mark Object or Replacement Prefab is missing!");
         }
     }
 
