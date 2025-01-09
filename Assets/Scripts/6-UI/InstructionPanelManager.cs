@@ -33,7 +33,7 @@ public class InstructionPanelManager : MonoBehaviour
     private void Start()
     {
         // Show instructions at the start and freeze the game
-        ShowInstructions();
+        // ShowInstructions();
     }
 
     private void ToggleInstructions(InputAction.CallbackContext context)
