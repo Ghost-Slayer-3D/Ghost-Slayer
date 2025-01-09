@@ -1698,23 +1698,24 @@ MonoBehaviour:
     W,
     A, S, D - Move
 
-    E - Activate switch / Speak to villagers
+    E - Activate switch / Speak to villagers / Pick Up
 
-    I - Toggle
-    instructions (pauses game)
+    P
+    - Main Menu (Pause)
 
-    Left Control - Crouch | Space - Jump | Left Shift
-    - Run
+    Left Control - Crouch | Space - Jump | Left Shift -
+    Run
 
     Hide Mouse - RMB
 
     activate flashlight - LMB
 
-    Tips:
 
 
-    No
-    tips! Tirkedu!'
+    Tip:
+
+    Try
+    and check every side of the objects.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}

@@ -17,6 +17,9 @@ public class FlashlightController : MonoBehaviour
     [SerializeField] private LayerMask ghostLayer;         // Layer for detecting ghosts
     [SerializeField] private float flashlightRange = 5f;   // Range of the flashlight beam
 
+    [Header("Input Action")]
+    [SerializeField] private InputAction flashlightAction; // Input action for flashlight
+
     // -------------------------------
     // Private Fields
     // -------------------------------
@@ -24,57 +27,28 @@ public class FlashlightController : MonoBehaviour
     private bool isActive = false;                         // Tracks flashlight state
     private float activeTimer = 0f;                        // Timer for deactivation
 
-    private PlayerInput playerInput;                       // Input system reference
-    private InputAction flashlightAction;                  // Action for flashlight input
-
     // -------------------------------
     // Unity Methods
     // -------------------------------
 
     /// <summary>
-    /// Awake is called when the script instance is being loaded.
-    /// Initializes input actions and validates PlayerInput component.
-    /// </summary>
-    private void Awake()
-    {
-        // Get the PlayerInput component and validate it
-        playerInput = GetComponent<PlayerInput>();
-        if (playerInput == null)
-        {
-            Debug.LogError("PlayerInput component is missing on the Player GameObject!");
-            return;
-        }
-
-        // Get the flashlight action from Input Actions
-        flashlightAction = playerInput.actions.FindAction("Flashlight", true);
-        if (flashlightAction == null)
-        {
-            Debug.LogError("Flashlight action is not found in Input Actions!");
-        }
-    }
-
-    /// <summary>
     /// Called when the object becomes enabled and active.
-    /// Subscribes to flashlight activation input.
+    /// Enables the flashlight input action.
     /// </summary>
     private void OnEnable()
     {
-        if (flashlightAction != null)
-        {
-            flashlightAction.performed += ActivateFlashlight;
-        }
+        flashlightAction.Enable();
+        flashlightAction.performed += ActivateFlashlight;
     }
 
     /// <summary>
     /// Called when the object becomes disabled or inactive.
-    /// Unsubscribes from flashlight activation input.
+    /// Disables the flashlight input action.
     /// </summary>
     private void OnDisable()
     {
-        if (flashlightAction != null)
-        {
-            flashlightAction.performed -= ActivateFlashlight;
-        }
+        flashlightAction.Disable();
+        flashlightAction.performed -= ActivateFlashlight;
     }
 
     /// <summary>
