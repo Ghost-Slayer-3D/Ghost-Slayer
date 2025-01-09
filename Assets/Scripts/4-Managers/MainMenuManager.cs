@@ -1,130 +1,113 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Unity.Services.CloudSave; // For Unity Cloud Save
-using System.Threading.Tasks;
 
 public class MainMenuManager : MonoBehaviour
 {
     [Header("UI Elements")]
-    public Button newGameButton;
+    public Button resumeButton;
     public Button easyButton;
     public Button mediumButton;
     public Button hardButton;
-    public Button resumeButton;
-    public InputField playerNameField;
+    public Button instructionsButton;
+    public Button quitButton;
 
-    private string playerName;
+    [Header("Instructions Panel")]
+    public GameObject instructionsPanel; // Reference to the panel
+    public Button closeInstructionsButton; // Reference to the close button
+
+    [Header("Pause Menu")]
+    public GameObject mainMenuPanel; // Reference to the main menu panel (can be shown in-game)
+
+    private bool isGameRunning = false;
 
     private void Start()
     {
-        // Initialize Unity Cloud Save
-        InitializeCloudSave();
-        
         // Add button listeners
-        newGameButton.onClick.AddListener(ShowDifficultyOptions);
+        resumeButton.onClick.AddListener(ResumeGame);
         easyButton.onClick.AddListener(() => StartNewGame("Easy"));
         mediumButton.onClick.AddListener(() => StartNewGame("Medium"));
         hardButton.onClick.AddListener(() => StartNewGame("Hard"));
-        resumeButton.onClick.AddListener(ResumeGame);
+        instructionsButton.onClick.AddListener(ShowInstructions);
+        quitButton.onClick.AddListener(QuitGame);
 
-        // Hide difficulty options by default
-        SetDifficultyOptionsActive(false);
+        closeInstructionsButton.onClick.AddListener(HideInstructions);
+
+        // Ensure menus are in the correct state
+        instructionsPanel.SetActive(false);
+        mainMenuPanel.SetActive(true);
+        UpdateResumeButton();
     }
 
-    private void InitializeCloudSave()
+    private void Update()
     {
-        // Add Unity Services initialization here, if needed.
-    }
-
-    private void ShowDifficultyOptions()
-    {
-        SetDifficultyOptionsActive(true);
-    }
-
-    private void SetDifficultyOptionsActive(bool isActive)
-    {
-        easyButton.gameObject.SetActive(isActive);
-        mediumButton.gameObject.SetActive(isActive);
-        hardButton.gameObject.SetActive(isActive);
-    }
-
-    private async void StartNewGame(string difficulty)
-    {
-        playerName = playerNameField.text;
-
-        if (string.IsNullOrEmpty(playerName))
+        // Listen for ESC key
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Debug.LogWarning("Player name is empty!");
-            return;
+            TogglePauseMenu();
         }
-
-        // Save player data in Unity Cloud Save
-        await SavePlayerData(playerName, difficulty);
-
-        // Load the game scene
-        SceneManager.LoadScene("GameScene"); // Replace with your actual game scene name
     }
 
-    private async void ResumeGame()
+    private void TogglePauseMenu()
     {
-        playerName = playerNameField.text;
+        bool isPaused = mainMenuPanel.activeSelf;
+        mainMenuPanel.SetActive(!isPaused);
 
-        if (string.IsNullOrEmpty(playerName))
+        if (isPaused)
         {
-            Debug.LogWarning("Player name is empty!");
-            return;
-        }
-
-        // Load player data from Unity Cloud Save
-        var data = await LoadPlayerData(playerName);
-
-        if (data != null)
-        {
-            Debug.Log($"Loaded data for {playerName}: Difficulty - {data["Difficulty"]}");
-            // Load the game scene or player progress here
-            SceneManager.LoadScene("GameScene"); // Replace with your actual game scene name
+            ResumeGame();
         }
         else
         {
-            Debug.LogWarning("No saved data found for this player!");
+            PauseGame();
         }
     }
 
-    private async Task SavePlayerData(string playerName, string difficulty)
+    private void UpdateResumeButton()
     {
-        try
-        {
-            await CloudSaveService.Instance.Data.ForceSaveAsync(new System.Collections.Generic.Dictionary<string, object>
-            {
-                { "PlayerName", playerName },
-                { "Difficulty", difficulty }
-            });
+        // Enable or disable the Resume button based on game state
+        resumeButton.interactable = isGameRunning;
+    }
 
-            Debug.Log("Player data saved successfully!");
-        }
-        catch (System.Exception e)
+    private void StartNewGame(string difficulty)
+    {
+        Debug.Log($"Starting new game with difficulty: {difficulty}");
+        isGameRunning = true;
+        UpdateResumeButton();
+        SceneManager.LoadScene(difficulty); // Load the scene corresponding to the difficulty
+    }
+
+    private void ResumeGame()
+    {
+        Debug.Log("Resuming game...");
+        if (isGameRunning)
         {
-            Debug.LogError($"Failed to save player data: {e.Message}");
+            mainMenuPanel.SetActive(false);
+            Time.timeScale = 1f; // Resume game time
         }
     }
 
-    private async Task<System.Collections.Generic.Dictionary<string, string>> LoadPlayerData(string playerName)
+    private void PauseGame()
     {
-        try
-        {
-            var data = await CloudSaveService.Instance.Data.LoadAsync();
+        Debug.Log("Pausing game...");
+        Time.timeScale = 0f; // Pause game time
+    }
 
-            if (data.ContainsKey("PlayerName") && data["PlayerName"] == playerName)
-            {
-                return data;
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"Failed to load player data: {e.Message}");
-        }
+    private void ShowInstructions()
+    {
+        Debug.Log("Showing instructions...");
+        instructionsPanel.SetActive(true);
+    }
 
-        return null;
+    private void HideInstructions()
+    {
+        Debug.Log("Hiding instructions...");
+        instructionsPanel.SetActive(false);
+    }
+
+    private void QuitGame()
+    {
+        Debug.Log("Quitting game...");
+        Application.Quit();
     }
 }

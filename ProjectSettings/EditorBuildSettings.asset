@@ -6,7 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Village.unity
+    path: Assets/Scenes/MainMenu.unity
+    guid: a2e60312761884b9ca3b0b87d7be237e
+  - enabled: 1
+    path: Assets/Scenes/Easy.unity
     guid: 14e046f3b1d6e7d4a930810a97290bb1
+  - enabled: 1
+    path: Assets/Scenes/Medium.unity
+    guid: 215361f5af7ba48499ba2a647b3db2d6
+  - enabled: 1
+    path: Assets/Scenes/Hard.unity
+    guid: 71a605ae8c67b4b39bea297863c75c81
+  - enabled: 1
+    path: Assets/Scenes/GameOverScene.unity
+    guid: b80c5354663834dc39fe33eaf91d61ef
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
