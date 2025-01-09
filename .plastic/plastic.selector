@@ -1,0 +1,4 @@
+repository "Ghost_Slayer@Ariel_Gidi_Roi@cloud"
+  path "/"
+    br "/main"
+    co "/main"
