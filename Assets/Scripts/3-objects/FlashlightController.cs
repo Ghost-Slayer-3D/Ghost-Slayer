@@ -49,6 +49,14 @@ public class FlashlightController : MonoBehaviour
     [Tooltip("Input action for toggling the flashlight.")]
     [SerializeField] private InputAction flashlightAction;
 
+    [Tooltip("Input action for picking up items.")]
+    [SerializeField] private InputAction pickupAction;
+
+
+    [Header("Animator")]
+    [Tooltip("Animator component for the character.")]
+    [SerializeField] private Animator animator; // Reference to the Animator
+
     private float beamTimer = 0f;
     private bool isBeamActive = false;
 
@@ -85,13 +93,19 @@ public class FlashlightController : MonoBehaviour
 
     private void Update()
     {
-        // Check if the flashlight action was triggered
+        // Trigger flashlight (Attack) animation and action
         if (flashlightAction.triggered)
         {
-            UseFlashlight();
+            TriggerFlashlight(); // Replaced UseFlashlight with TriggerFlashlight
         }
 
-        // Handle beam effect duration
+        // Trigger pickup animation
+        if (pickupAction.triggered)
+        {
+            TriggerPickup();
+        }
+
+        // Handle flashlight beam duration
         if (isBeamActive)
         {
             beamTimer -= Time.deltaTime;
@@ -101,6 +115,7 @@ public class FlashlightController : MonoBehaviour
             }
         }
     }
+
 
     private void UseFlashlight()
     {
@@ -214,6 +229,54 @@ public class FlashlightController : MonoBehaviour
             Debug.Log($"Dropped another {itemPrefabs[secondDropIndex].name} at {secondDropPosition}");
         }
     }
+
+    private void TriggerFlashlight()
+    {
+        Debug.Log("TriggerFlashlight called.");
+
+        if (GameManager.Instance.GetCurrentBatteries() <= 0)
+        {
+            Debug.LogWarning("Cannot use flashlight. No batteries.");
+            return;
+        }
+
+        ActivateFlashlightLight();
+        GameManager.Instance.UseBattery();
+        KillGhosts();
+
+        // Trigger the "Attack" animation
+        if (animator != null)
+        {
+            animator.SetTrigger("AttackTrigger");
+            Debug.Log("AttackTrigger set on Animator.");
+        }
+        else
+        {
+            Debug.LogWarning("Animator is not assigned in the inspector.");
+        }
+    }
+
+
+
+  private void TriggerPickup()
+    {
+        Debug.Log("TriggerPickup called.");
+
+        // Trigger the "Pickup" animation
+        if (animator != null)
+        {
+            animator.SetTrigger("PickupTrigger");
+            Debug.Log("PickupTrigger set on Animator.");
+        }
+        else
+        {
+            Debug.LogWarning("Animator is not assigned in the inspector.");
+        }
+
+        // Implement pickup logic (if any)
+        Debug.Log("Pickup action performed.");
+    }
+
 
     private void OnDrawGizmosSelected()
     {  
