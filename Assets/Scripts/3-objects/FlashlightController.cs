@@ -1,138 +1,232 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // New Input System
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
-/// <summary>
-/// Controls the flashlight functionality, including activation, battery usage,
-/// and ghost detection within range.
-/// </summary>
+/**
+ * Controls the flashlight, including visual light intensity and instant ghost elimination.
+ */
 public class FlashlightController : MonoBehaviour
-{
-    // -------------------------------
-    // Serialized Fields
-    // -------------------------------
+{   
+    [Header("Drop Items")]
+    [Tooltip("Prefab for the heart item.")]
+    [SerializeField] private GameObject heartPrefab;
+
+    [Tooltip("Prefab for the battery item.")]
+    [SerializeField] private GameObject batteryPrefab;
+
+    [Tooltip("Prefab for the coin item.")]
+    [SerializeField] private GameObject coinPrefab;
+
+    [Tooltip("Chance for a second drop (percentage between 0 and 100).")]
+    [SerializeField] private float secondDropChance = 15f;
 
     [Header("Flashlight Settings")]
-    [SerializeField] private GameObject flashlightBeam;    // Reference to the flashlight beam object
-    [SerializeField] private float activeDuration = 1.5f;  // Duration the flashlight remains active
-    [SerializeField] private LayerMask ghostLayer;         // Layer for detecting ghosts
-    [SerializeField] private float flashlightRange = 5f;   // Range of the flashlight beam
+    [Tooltip("Spotlight component for the flashlight.")]
+    [SerializeField] private Light flashlightLight; // Reference to the Spot Light
+
+    [Tooltip("Maximum range of the flashlight beam.")]
+    [SerializeField] private float maxLightRange = 10f;
+
+    [Tooltip("Maximum intensity of the flashlight beam.")]
+    [SerializeField] private float maxLightIntensity = 5f;
+
+    [Tooltip("Duration for which the flashlight effect is visible.")]
+    [SerializeField] private float beamDuration = 0.5f;
+
+    [Tooltip("Layer for detecting ghosts.")]
+    [SerializeField] private LayerMask ghostLayer;
+
+    [Tooltip("Range of the flashlight for detecting ghosts.")]
+    [SerializeField] private float detectionRange = 5f;
+
+    [Tooltip("Width of the detection area.")]
+    [SerializeField] private float detectionWidth = 2f;
+
+    [Tooltip("Height of the detection area.")]
+    [SerializeField] private float detectionHeight = 2f;
 
     [Header("Input Action")]
-    [SerializeField] private InputAction flashlightAction; // Input action for flashlight
+    [Tooltip("Input action for toggling the flashlight.")]
+    [SerializeField] private InputAction flashlightAction;
 
-    // -------------------------------
-    // Private Fields
-    // -------------------------------
+    private float beamTimer = 0f;
+    private bool isBeamActive = false;
 
-    private bool isActive = false;                         // Tracks flashlight state
-    private float activeTimer = 0f;                        // Timer for deactivation
+    private float defaultLightRange;
+    private float defaultLightIntensity;
 
-    // -------------------------------
-    // Unity Methods
-    // -------------------------------
-
-    /// <summary>
-    /// Called when the object becomes enabled and active.
-    /// Enables the flashlight input action.
-    /// </summary>
     private void OnEnable()
     {
         flashlightAction.Enable();
-        flashlightAction.performed += ActivateFlashlight;
     }
 
-    /// <summary>
-    /// Called when the object becomes disabled or inactive.
-    /// Disables the flashlight input action.
-    /// </summary>
     private void OnDisable()
     {
         flashlightAction.Disable();
-        flashlightAction.performed -= ActivateFlashlight;
     }
 
-    /// <summary>
-    /// Called once per frame to handle flashlight duration countdown.
-    /// </summary>
+    private void OnValidate()
+    {
+        if (flashlightAction == null || flashlightAction.bindings.Count == 0)
+        {
+            flashlightAction = new InputAction(type: InputActionType.Button);
+            flashlightAction.AddBinding("<Keyboard>/f");
+        }
+    }
+
+    private void Start()
+    {
+        if (flashlightLight != null)
+        {
+            defaultLightRange = flashlightLight.range;
+            defaultLightIntensity = flashlightLight.intensity;
+        }
+    }
+
     private void Update()
     {
-        if (isActive)
+        // Check if the flashlight action was triggered
+        if (flashlightAction.triggered)
         {
-            activeTimer -= Time.deltaTime;
+            UseFlashlight();
+        }
 
-            // Deactivate flashlight if timer runs out
-            if (activeTimer <= 0f)
+        // Handle beam effect duration
+        if (isBeamActive)
+        {
+            beamTimer -= Time.deltaTime;
+            if (beamTimer <= 0f)
             {
-                DeactivateFlashlight();
+                ResetFlashlightLight();
             }
         }
     }
 
-    /// <summary>
-    /// Draws the flashlight range in the scene view for debugging.
-    /// </summary>
-    private void OnDrawGizmosSelected()
+    private void UseFlashlight()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position, transform.position + transform.right * flashlightRange);
-    }
-
-    // -------------------------------
-    // Flashlight Logic
-    // -------------------------------
-
-    /// <summary>
-    /// Activates the flashlight if batteries are available and damages ghosts in range.
-    /// </summary>
-    /// <param name="context">Input action context.</param>
-    private void ActivateFlashlight(InputAction.CallbackContext context)
-    {
-        // Check if the flashlight is already active or if there are no batteries
-        if (isActive || GameManager.Instance.GetCurrentBatteries() <= 0)
+        if (GameManager.Instance.GetCurrentBatteries() <= 0)
         {
+            Debug.LogWarning("Cannot use flashlight. No batteries.");
             return;
         }
 
-        // Activate the flashlight beam and start the timer
-        flashlightBeam.SetActive(true);
-        isActive = true;
-        activeTimer = activeDuration;
+        ActivateFlashlightLight();
 
-        // Reduce battery count
         GameManager.Instance.UseBattery();
 
-        // Check for ghosts in range and destroy them
         KillGhosts();
     }
 
-    /// <summary>
-    /// Deactivates the flashlight after the duration ends.
-    /// </summary>
-    private void DeactivateFlashlight()
+    private void ActivateFlashlightLight()
     {
-        flashlightBeam.SetActive(false);
-        isActive = false;
+        if (flashlightLight == null)
+        {
+            Debug.LogError("No flashlight light assigned!");
+            return;
+        }
+
+        flashlightLight.range = maxLightRange;
+        flashlightLight.intensity = maxLightIntensity;
+
+        isBeamActive = true;
+        beamTimer = beamDuration;
+
+        Debug.Log("Flashlight activated visually.");
     }
 
-    // -------------------------------
-    // Ghost Interaction
-    // -------------------------------
+    private void ResetFlashlightLight()
+    {
+        if (flashlightLight == null) return;
 
-    /// <summary>
-    /// Detects and damages ghosts within the flashlight's range.
-    /// </summary>
+        flashlightLight.range = defaultLightRange;
+        flashlightLight.intensity = defaultLightIntensity;
+
+        isBeamActive = false;
+
+        Debug.Log("Flashlight reset to default.");
+    }
+
     private void KillGhosts()
     {
-        // Use RaycastAll to detect ghosts within the flashlight's range
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, transform.right, flashlightRange, ghostLayer);
+        Debug.Log("Checking for ghosts in range...");
+
+        // Define the center of the rectangle in front of the player
+        Vector3 boxCenter = transform.position + transform.forward * (detectionRange / 2);
+
+        // Define the size of the rectangle (width, height, and length)
+        Vector3 boxSize = new Vector3(detectionWidth, detectionHeight, detectionRange);
+
+        // Detect all colliders within the rectangle
+        Collider[] hits = Physics.OverlapBox(boxCenter, boxSize / 2, transform.rotation, ghostLayer);
+
+        if (hits.Length == 0)
+        {
+            Debug.Log("No ghosts detected.");
+            return;
+        }
 
         foreach (var hit in hits)
         {
-            GhostController ghost = hit.collider.GetComponent<GhostController>();
+            GhostController ghost = hit.GetComponent<GhostController>();
             if (ghost != null)
             {
-                ghost.TakeDamage(); // Damage or destroy the ghost
+                ghost.TakeDamage(); // Kill or damage the ghost
+                Debug.Log($"Ghost hit and damaged: {ghost.name}");
+
+                // Handle item drops
+                DropItems(hit.transform.position);
+            }
+            else
+            {
+                Debug.LogWarning($"Detected object is not a ghost: {hit.name}");
             }
         }
+    }
+
+    private void DropItems(Vector3 position)
+    {
+        // List of possible items to drop
+        List<GameObject> itemPrefabs = new List<GameObject> { heartPrefab, batteryPrefab, coinPrefab };
+
+        // Ensure we have all the necessary prefabs assigned
+        if (itemPrefabs.Exists(prefab => prefab == null))
+        {
+            Debug.LogWarning("One or more item prefabs are not assigned in the inspector!");
+            return;
+        }
+
+        // Adjust the initial position for the first drop to appear slightly above the ground
+        Vector3 firstDropPosition = position + Vector3.up * 1f; // Drop 0.5 units higher
+
+        // Drop the first random item
+        int firstDropIndex = Random.Range(0, itemPrefabs.Count);
+        Instantiate(itemPrefabs[2], firstDropPosition, Quaternion.identity);
+        Debug.Log($"Dropped {itemPrefabs[firstDropIndex].name} at {firstDropPosition}");
+
+        // 15% chance to drop another random item
+        if (Random.Range(0f, 100f) < secondDropChance)
+        {
+            // Adjust the position for the second drop to be slightly aside and above the first drop
+            Vector3 secondDropPosition = position + Vector3.up * 1f + Vector3.right * 0.3f; // Slightly higher and to the side
+
+            int secondDropIndex = Random.Range(0, itemPrefabs.Count);
+            Instantiate(itemPrefabs[secondDropIndex], secondDropPosition, Quaternion.identity);
+            Debug.Log($"Dropped another {itemPrefabs[secondDropIndex].name} at {secondDropPosition}");
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {  
+        Gizmos.color = Color.yellow;
+
+        // Define the center of the rectangle in front of the player
+        Vector3 boxCenter = transform.position + transform.forward * (detectionRange / 2);
+
+        // Define the size of the rectangle (width, height, and length)
+        Vector3 boxSize = new Vector3(detectionWidth, detectionHeight, detectionRange);
+
+        // Draw the rectangle in the Scene view
+        Gizmos.matrix = Matrix4x4.TRS(boxCenter, transform.rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, boxSize);
     }
 }
