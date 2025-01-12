@@ -3,26 +3,33 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /**
- * Controls player movement, including walking, running, crouching, and jumping.
+ * Controls player movement, including walking, running, crouching, and jumping,
+ * with support for shop-purchased upgrades.
  */
 [RequireComponent(typeof(CharacterController))]
 public class CharacterKeyboardMover : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    [Tooltip("Speed of player keyboard-movement, in meters/second")]
-    [SerializeField] private float speed = 3.5f;
+    [Header("Base Movement Settings")]
+    [Tooltip("Base speed of player movement, in meters/second.")]
+    [SerializeField] private float baseSpeed = 3.5f;
 
-    [Tooltip("Gravity affecting the player.")]
-    [SerializeField] private float gravity = 9.81f;
+    [Tooltip("Base gravity affecting the player.")]
+    [SerializeField] private float baseGravity = 9.81f;
 
-    [Tooltip("Height the player can jump.")]
-    [SerializeField] private float jumpHeight = 3.0f;
+    [Tooltip("Base height the player can jump.")]
+    [SerializeField] private float baseJumpHeight = 3.0f;
 
     [Tooltip("Multiplier for running speed.")]
     [SerializeField] private float runMultiplier = 2.0f;
 
     [Tooltip("Speed multiplier while crouching.")]
     [SerializeField] private float crouchSpeedMultiplier = 0.2f;
+
+    // Shop-purchased upgrades
+    private float speedMultiplier = 1.0f;
+    private float jumpMultiplier = 1.0f;
+    private bool isInvisible = false;
+    private bool unlimitedBattery = false;
 
     // Player states
     private bool isJumping = false;
@@ -31,7 +38,7 @@ public class CharacterKeyboardMover : MonoBehaviour
     // Character and input references
     private CharacterController cc;
     private Camera playerCamera;
-    private Animator animator; // Animator reference
+    private Animator animator;
 
     [Header("Input Actions")]
     [Tooltip("Input action for movement.")]
@@ -66,58 +73,20 @@ public class CharacterKeyboardMover : MonoBehaviour
         crouchAction.Disable();
     }
 
-    // Validate bindings in editor
-    private void OnValidate()
-    {
-        // Movement bindings
-        if (moveAction == null || moveAction.bindings.Count == 0)
-        {
-            moveAction = new InputAction(type: InputActionType.Value);
-            moveAction.AddCompositeBinding("2DVector")
-                .With("Up", "<Keyboard>/w")
-                .With("Down", "<Keyboard>/s")
-                .With("Left", "<Keyboard>/a")
-                .With("Right", "<Keyboard>/d");
-        }
-
-        // Jump bindings
-        if (jumpAction == null || jumpAction.bindings.Count == 0)
-        {
-            jumpAction = new InputAction(type: InputActionType.Button);
-            jumpAction.AddBinding("<Keyboard>/space");
-        }
-
-        // Run bindings
-        if (runAction == null || runAction.bindings.Count == 0)
-        {
-            runAction = new InputAction(type: InputActionType.Button);
-            runAction.AddBinding("<Keyboard>/leftShift");
-        }
-
-        // Crouch bindings
-        if (crouchAction == null || crouchAction.bindings.Count == 0)
-        {
-            crouchAction = new InputAction(type: InputActionType.Button);
-            crouchAction.AddBinding("<Keyboard>/leftCtrl");
-        }
-    }
-
-    // Initialize components
     private void Start()
     {
         cc = GetComponent<CharacterController>();
         playerCamera = Camera.main;
-        animator = GetComponent<Animator>(); // Reference the Animator
+        animator = GetComponent<Animator>();
     }
 
-    // Handle player movement
     private void Update()
     {
         Vector2 inputMovement = moveAction.ReadValue<Vector2>();
         Vector3 move = new Vector3(inputMovement.x, 0, inputMovement.y).normalized;
         move = transform.TransformDirection(move);
 
-        float adjustedSpeed = speed;
+        float adjustedSpeed = baseSpeed * speedMultiplier;
 
         // Handle running
         if (runAction.ReadValue<float>() > 0 && !isCrouching)
@@ -154,18 +123,18 @@ public class CharacterKeyboardMover : MonoBehaviour
             // Handle jumping
             if (jumpAction.triggered)
             {
-                velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity);
+                velocity.y = Mathf.Sqrt(2 * baseJumpHeight * jumpMultiplier * baseGravity);
                 isJumping = true;
             }
         }
         else
         {
-            // **Airborne Movement - Allows moving while in air**
-            velocity.x = move.x * adjustedSpeed * 0.6f; // 60% reduced speed in air
+            // Airborne movement
+            velocity.x = move.x * adjustedSpeed * 0.6f;
             velocity.z = move.z * adjustedSpeed * 0.6f;
 
             // Apply gravity
-            velocity.y -= gravity * Time.deltaTime;
+            velocity.y -= baseGravity * Time.deltaTime;
         }
 
         // Apply movement and gravity
@@ -173,20 +142,51 @@ public class CharacterKeyboardMover : MonoBehaviour
 
         // Update Animator parameters
         UpdateAnimatorParameters();
+
+        // Handle invisibility visual effect
+        UpdateInvisibilityEffect();
     }
 
-    /**
-     * Updates Animator parameters to match player state.
-     */
     private void UpdateAnimatorParameters()
     {
         if (animator == null) return;
 
         float horizontalSpeed = new Vector3(velocity.x, 0, velocity.z).magnitude;
 
-        animator.SetFloat("speed", horizontalSpeed); // Update speed parameter
-        animator.SetFloat("verticalVelocity", velocity.y); // Update vertical velocity parameter
-        animator.SetBool("isGrounded", cc.isGrounded); // Update grounded state
-        animator.SetBool("isJumping", isJumping); // Update jumping state
+        animator.SetFloat("speed", horizontalSpeed);
+        animator.SetFloat("verticalVelocity", velocity.y);
+        animator.SetBool("isGrounded", cc.isGrounded);
+        animator.SetBool("isJumping", isJumping);
+    }
+
+    private void UpdateInvisibilityEffect()
+    {
+        if (isInvisible)
+        {
+            // Add visual effect logic here (e.g., material transparency)
+        }
+    }
+
+    // Methods to apply shop upgrades
+    public void UpgradeSpeed(float multiplier)
+    {
+        speedMultiplier += multiplier;
+    }
+
+    public void UpgradeJump(float multiplier)
+    {
+        jumpMultiplier += multiplier;
+    }
+
+    public void EnableInvisibility()
+    {
+        isInvisible = true;
+        // Trigger invisibility logic
+    }
+
+    public void EnableUnlimitedBattery()
+    {
+        unlimitedBattery = true;
+        // Trigger unlimited battery logic
     }
 }

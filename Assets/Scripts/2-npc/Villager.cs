@@ -17,11 +17,12 @@ public class Villager : MonoBehaviour
         }
         else
         {
+            Debug.LogWarning("Interaction text not assigned for " + gameObject.name);
         }
     }
 
     // Called by Player Interaction script
-    public void Interact()
+    public virtual void Interact()
     {
         if (!isInteracting)
         {
