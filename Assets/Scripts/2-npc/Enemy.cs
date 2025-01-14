@@ -25,6 +25,7 @@ public class Enemy : MonoBehaviour
     private AudioSource audioSource;
     private Animator animator;
     private NavMeshAgent navMeshAgent;
+    private bool isPlayerInvisible = false;
 
     private void Start()
     {
@@ -36,6 +37,15 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if (isPlayerInvisible)
+        {
+            // Stop any logic related to attacking or chasing the player
+            muzzleFlash.SetActive(false);
+            isShooting = false;
+            return;
+        }
+
+        // Existing logic when the player is visible
         playerPosition = player.transform.position;
         float distanceToPlayer = Vector3.Distance(playerPosition, transform.position);
 
@@ -109,5 +119,23 @@ public class Enemy : MonoBehaviour
     public bool IsShooting()
     {
         return isShooting;
+    }
+
+    public void OnPlayerInvisibilityChanged(bool state)
+    {
+        isPlayerInvisible = state;
+
+        if (isPlayerInvisible)
+        {
+            Debug.Log("Player is invisible, stopping enemy tracking.");
+            navMeshAgent.isStopped = true; // Stop movement
+            muzzleFlash.SetActive(false); // Stop shooting
+            isShooting = false;
+        }
+        else
+        {
+            Debug.Log("Player is visible, resuming enemy tracking.");
+            navMeshAgent.isStopped = false; // Resume movement
+        }
     }
 }

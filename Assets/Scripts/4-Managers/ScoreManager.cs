@@ -1,22 +1,16 @@
 using UnityEngine;
 
-/// <summary>
-/// Manages the player's score (coins) and notifies other systems of changes.
-/// </summary>
 public class ScoreManager : MonoBehaviour
 {
     // Singleton Instance
     public static ScoreManager Instance { get; private set; }
-
+    private bool isDoubleCoinsActive = false; // Tracks Double Coins buff
     private int coins = 0;
 
     // Event for coin count updates
     public delegate void OnCoinsChanged(int newCoinCount);
     public event OnCoinsChanged onCoinsChangedCallback;
 
-    /// <summary>
-    /// Ensures only one instance of the ScoreManager exists.
-    /// </summary>
     private void Awake()
     {
         if (Instance == null)
@@ -29,24 +23,33 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Adds coins and notifies listeners of the updated coin count.
-    /// </summary>
-    /// <param name="amount">The number of coins to add.</param>
     public void AddCoins(int amount)
     {
+        if (isDoubleCoinsActive)
+        {
+            amount *= 2;
+            Debug.Log($"Double Coins active! Adding {amount} coins.");
+        }
+
         coins += amount;
 
         // Notify UI or other systems
         onCoinsChangedCallback?.Invoke(coins);
     }
 
-    /// <summary>
-    /// Returns the current number of coins.
-    /// </summary>
-    /// <returns>Current coin count.</returns>
     public int GetCoins()
     {
         return coins;
+    }
+
+    public void SetDoubleCoins(bool state)
+    {
+        isDoubleCoinsActive = state;
+        Debug.Log($"Double Coins set to {state}");
+    }
+
+    public bool IsDoubleCoinsActive()
+    {
+        return isDoubleCoinsActive; // Check if double coins is active
     }
 }

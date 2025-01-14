@@ -14,6 +14,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int maxBatteries = 3;
     [SerializeField] private int currentBatteries;
 
+    [Header("Player Buffs")]
+    private bool isPlayerInvisible = false;
+    private bool isUnlimitedHP = false; // Tracks Unlimited HP buff
+    private bool isUnlimitedBattery = false; // Tracks Unlimited Battery buff
+
     // HUD Update Event
     public delegate void OnHUDUpdate();
     public event OnHUDUpdate onHUDUpdateCallback;
@@ -44,16 +49,14 @@ public class GameManager : MonoBehaviour
         onHUDUpdateCallback?.Invoke();
     }
 
-    // -------------------------------
-    // Health Management
-    // -------------------------------
-
-    /// <summary>
-    /// Reduces the player's health.
-    /// </summary>
-    /// <param name="amount">Amount of damage.</param>
     public void TakeDamage(int amount)
     {
+        if (isUnlimitedHP)
+        {
+            Debug.Log("Unlimited HP active! Ignoring damage.");
+            return;
+        }
+
         currentHearts -= amount;
         currentHearts = Mathf.Clamp(currentHearts, 0, maxHearts);
 
@@ -67,10 +70,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Heals the player's health.
-    /// </summary>
-    /// <param name="amount">Amount to heal.</param>
     public void Heal(int amount)
     {
         currentHearts += amount;
@@ -80,13 +79,6 @@ public class GameManager : MonoBehaviour
         onHUDUpdateCallback?.Invoke();
     }
 
-    // -------------------------------
-    // Battery Management
-    // -------------------------------
-
-    /// <summary>
-    /// Reduces battery count by 1.
-    /// </summary>
     public void UseBattery()
     {
         if (currentBatteries > 0)
@@ -99,10 +91,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Adds batteries up to the maximum limit.
-    /// </summary>
-    /// <param name="amount">Number of batteries to add.</param>
     public void AddBattery(int amount)
     {
         currentBatteries += amount;
@@ -112,60 +100,80 @@ public class GameManager : MonoBehaviour
         onHUDUpdateCallback?.Invoke();
     }
 
-    // -------------------------------
-    // Getters for HUD
-    // -------------------------------
-
-    /// <summary>
-    /// Gets the current number of hearts.
-    /// </summary>
-    /// <returns>Current health.</returns>
     public int GetCurrentHearts()
     {
         return currentHearts;
     }
 
-    /// <summary>
-    /// Gets the current number of batteries.
-    /// </summary>
-    /// <returns>Current battery count.</returns>
     public int GetCurrentBatteries()
     {
         return currentBatteries;
     }
 
-    // -------------------------------
-    // Getters for Max Values
-    // -------------------------------
-
-    /// <summary>
-    /// Gets the maximum number of hearts.
-    /// </summary>
-    /// <returns>Maximum health.</returns>
     public int GetMaxHearts()
     {
         return maxHearts;
     }
 
-    /// <summary>
-    /// Gets the maximum number of batteries.
-    /// </summary>
-    /// <returns>Maximum battery count.</returns>
     public int GetMaxBatteries()
     {
         return maxBatteries;
     }
 
-    // -------------------------------
-    // Game Over Logic
-    // -------------------------------
-
-    /// <summary>
-    /// Handles the Game Over scenario.
-    /// </summary>
     private void GameOver()
     {
         Debug.Log("Game Over!");
+
+        // Show the cursor
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void SetPlayerInvisible(bool state)
+    {
+        isPlayerInvisible = state;
+        Debug.Log($"Player invisibility set to {state}");
+
+        // Notify all enemies and ghosts about invisibility change
+        Enemy[] enemies = FindObjectsOfType<Enemy>();
+        foreach (var enemy in enemies)
+        {
+            enemy.OnPlayerInvisibilityChanged(state);
+        }
+
+        GhostController[] ghosts = FindObjectsOfType<GhostController>();
+        foreach (var ghost in ghosts)
+        {
+            ghost.OnPlayerInvisibilityChanged(state);
+        }
+    }
+
+    public bool IsPlayerInvisible()
+    {
+        return isPlayerInvisible;
+    }
+
+    public void SetUnlimitedHP(bool state)
+    {
+        isUnlimitedHP = state;
+        Debug.Log($"Unlimited HP set to {state}");
+    }
+
+    public bool IsUnlimitedHP()
+    {
+        return isUnlimitedHP;
+    }
+
+    public void SetUnlimitedBattery(bool state)
+    {
+        isUnlimitedBattery = state;
+        Debug.Log($"Unlimited Battery set to {state}");
+    }
+
+    public bool IsUnlimitedBattery()
+    {
+        return isUnlimitedBattery;
     }
 }

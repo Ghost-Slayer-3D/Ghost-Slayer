@@ -41,7 +41,6 @@ public class VillagerInteraction : MonoBehaviour
             if (villager != null)
             {
                 currentVillager = villager; // Assign the villager if found
-                Debug.Log($"Detected villager: {villager.name}"); // Debug log for detection
                 break;
             }
         }
@@ -71,12 +70,10 @@ public class VillagerInteraction : MonoBehaviour
         // Interact only if a villager is detected
         if (currentVillager != null)
         {
-            Debug.Log($"Interacting with: {currentVillager.name}"); // Debug log for interaction
             currentVillager.Interact();
         }
         else
         {
-            Debug.LogWarning("No villager detected to interact with."); // Debug log for no interaction
         }
     }
 }

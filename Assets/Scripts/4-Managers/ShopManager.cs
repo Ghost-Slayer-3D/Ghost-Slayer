@@ -1,26 +1,43 @@
 using UnityEngine;
-using TMPro;
+using UnityEngine.UI; // For RawImage
 
-/**
- * Manages the shop where players can purchase upgrades.
- * Integrates with CharacterKeyboardMover for movement-related upgrades.
- */
 public class ShopManager : MonoBehaviour
 {
     [SerializeField] private GameObject shopPanel; // Reference to the shop UI panel
-    [SerializeField] private CharacterKeyboardMover playerMover; // Reference to the player's movement script
-    [SerializeField] private TMP_Text currencyText; // Display player's currency
+    [SerializeField] private CharacterKeyboardMover playerMover; // Reference for movement-related upgrades
+    [SerializeField] private InputRotator playerCameraRotator; // Reference to the camera rotation script
 
-    // Prices for items
-    [SerializeField] private int batteryPrice = 10;
-    [SerializeField] private int heartPrice = 15;
-    [SerializeField] private int speedPrice = 20;
-    [SerializeField] private int jumpPrice = 25;
-    [SerializeField] private int invisibilityPrice = 30;
-    [SerializeField] private int unlimitedBatteryPrice = 50;
+    [SerializeField] private int batteryPrice = 5;
+    [SerializeField] private int heartPrice = 5;
+    [SerializeField] private int speedPrice = 5;
+    [SerializeField] private int jumpPrice = 5;
+    [SerializeField] private int invisibilityPrice = 5;
+    [SerializeField] private int unlimitedBatteryPrice = 5;
+    [SerializeField] private int unlimitedHpPrice = 5;
+    [SerializeField] private int doubleCoinsPrice = 5;
+
+    [SerializeField] private RawImage invisibilityIndicator;
+    [SerializeField] private RawImage unlimitedBatteryIndicator;
+    [SerializeField] private RawImage unlimitedHpIndicator;
+    [SerializeField] private RawImage doubleCoinsIndicator;
+    [SerializeField] private RawImage jumpIndicator;
+    [SerializeField] private RawImage speedIndicator;
 
     private bool isPlayerInRange = false;
-    private int playerCurrency = 100; // Example starting currency, replace with actual player currency management
+    private bool speedPurchased = false;
+    private bool jumpPurchased = false;
+
+    private void Start()
+    {
+        shopPanel.SetActive(false);
+
+        invisibilityIndicator.gameObject.SetActive(false);
+        unlimitedBatteryIndicator.gameObject.SetActive(false);
+        unlimitedHpIndicator.gameObject.SetActive(false);
+        doubleCoinsIndicator.gameObject.SetActive(false);
+        jumpIndicator.gameObject.SetActive(false);
+        speedIndicator.gameObject.SetActive(false);
+    }
 
     private void Update()
     {
@@ -32,73 +49,191 @@ public class ShopManager : MonoBehaviour
 
     public void BuyItem(string item)
     {
+        Debug.Log($"Attempting to buy: {item}");
+
         switch (item)
         {
             case "Battery":
-                if (playerCurrency >= batteryPrice)
+                if (GameManager.Instance.GetCurrentBatteries() < GameManager.Instance.GetMaxBatteries())
                 {
-                    playerCurrency -= batteryPrice;
-                    Debug.Log("Purchased Battery Upgrade");
-                    // Add logic for battery upgrade
+                    if (TryPurchase(batteryPrice, "Battery"))
+                    {
+                        GameManager.Instance.AddBattery(1);
+                        Debug.Log("Bought 1 Battery");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Cannot buy Battery: Already at max capacity.");
                 }
                 break;
+
             case "Heart":
-                if (playerCurrency >= heartPrice)
+                if (GameManager.Instance.GetCurrentHearts() < GameManager.Instance.GetMaxHearts())
                 {
-                    playerCurrency -= heartPrice;
-                    Debug.Log("Purchased Heart Upgrade");
-                    // Add logic for health increase
+                    if (TryPurchase(heartPrice, "Heart"))
+                    {
+                        GameManager.Instance.Heal(1);
+                        Debug.Log("Bought 1 Heart");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Cannot buy Heart: Already at max health.");
                 }
                 break;
+
             case "Speed":
-                if (playerCurrency >= speedPrice)
+                if (!speedPurchased)
                 {
-                    playerCurrency -= speedPrice;
-                    playerMover.UpgradeSpeed(0.5f); // Example multiplier for speed
-                    Debug.Log("Purchased Speed Upgrade");
+                    if (TryPurchase(speedPrice, "Speed"))
+                    {
+                        playerMover.UpgradeSpeed(0.5f);
+                        speedIndicator.gameObject.SetActive(true);
+                        speedPurchased = true;
+                        Debug.Log("Bought Speed Upgrade");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Speed Upgrade already purchased.");
                 }
                 break;
+
             case "Jump":
-                if (playerCurrency >= jumpPrice)
+                if (!jumpPurchased)
                 {
-                    playerCurrency -= jumpPrice;
-                    playerMover.UpgradeJump(0.5f); // Example multiplier for jump height
-                    Debug.Log("Purchased Jump Upgrade");
+                    if (TryPurchase(jumpPrice, "Jump"))
+                    {
+                        playerMover.UpgradeJump(0.5f);
+                        jumpIndicator.gameObject.SetActive(true);
+                        jumpPurchased = true;
+                        Debug.Log("Bought Jump Upgrade");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Jump Upgrade already purchased.");
                 }
                 break;
+
             case "Invisibility":
-                if (playerCurrency >= invisibilityPrice)
+                if (!GameManager.Instance.IsPlayerInvisible())
                 {
-                    playerCurrency -= invisibilityPrice;
-                    playerMover.EnableInvisibility();
-                    Debug.Log("Purchased Invisibility");
+                    if (TryPurchase(invisibilityPrice, "Invisibility"))
+                    {
+                        playerMover.EnableInvisibility(120f); // Enable invisibility for 120 seconds
+                        invisibilityIndicator.gameObject.SetActive(true); // Show the indicator
+                        Debug.Log("Bought Invisibility Buff (2 minutes)");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Invisibility Buff already purchased.");
                 }
                 break;
+
             case "UnlimitedBattery":
-                if (playerCurrency >= unlimitedBatteryPrice)
+                Debug.Log("Checking Unlimited Battery purchase conditions.");
+                if (!GameManager.Instance.IsUnlimitedBattery())
                 {
-                    playerCurrency -= unlimitedBatteryPrice;
-                    playerMover.EnableUnlimitedBattery();
-                    Debug.Log("Purchased Unlimited Battery");
+                    Debug.Log("Unlimited Battery is not active.");
+                    if (TryPurchase(unlimitedBatteryPrice, "Unlimited Battery"))
+                    {
+                        playerMover.EnableUnlimitedBattery();
+                        GameManager.Instance.SetUnlimitedBattery(true);
+                        unlimitedBatteryIndicator.gameObject.SetActive(true); // Show the indicator
+                        Debug.Log("Bought Unlimited Battery Buff");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Not enough currency to purchase Unlimited Battery!");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Unlimited Battery Buff already purchased.");
                 }
                 break;
+
+            case "UnlimitedHP":
+                Debug.Log("Checking Unlimited HP purchase conditions.");
+                if (!GameManager.Instance.IsUnlimitedHP())
+                {
+                    Debug.Log("Unlimited HP is not active.");
+                    if (TryPurchase(unlimitedHpPrice, "Unlimited HP"))
+                    {
+                        GameManager.Instance.SetUnlimitedHP(true);
+                        unlimitedHpIndicator.gameObject.SetActive(true); // Show the indicator
+                        Debug.Log("Bought Unlimited HP Buff");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Not enough currency to purchase Unlimited HP!");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Unlimited HP Buff already purchased.");
+                }
+                break;
+
+            case "DoubleCoins":
+                Debug.Log("Checking Double Coins purchase conditions.");
+                if (!ScoreManager.Instance.IsDoubleCoinsActive())
+                {
+                    Debug.Log("Double Coins is not active.");
+                    if (TryPurchase(doubleCoinsPrice, "Double Coins"))
+                    {
+                        ScoreManager.Instance.SetDoubleCoins(true);
+                        doubleCoinsIndicator.gameObject.SetActive(true); // Show the indicator
+                        Debug.Log("Bought Double Coins Buff");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Not enough currency to purchase Double Coins!");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Double Coins Buff already purchased.");
+                }
+                break;
+
             default:
-                Debug.LogWarning("Invalid item");
+                Debug.LogWarning("Invalid item name: " + item);
                 break;
         }
-
-        UpdateCurrencyDisplay();
     }
 
-    private void UpdateCurrencyDisplay()
+    private bool TryPurchase(int price, string itemName)
     {
-        currencyText.text = $"Currency: {playerCurrency}";
+        if (ScoreManager.Instance.GetCoins() >= price)
+        {
+            ScoreManager.Instance.AddCoins(-price);
+            Debug.Log($"Successfully purchased {itemName}");
+            return true;
+        }
+        else
+        {
+            Debug.LogWarning($"Not enough currency to purchase {itemName}!");
+            return false;
+        }
     }
 
     private void ToggleShop()
     {
-        shopPanel.SetActive(!shopPanel.activeSelf);
-        Time.timeScale = shopPanel.activeSelf ? 0 : 1; // Pause game when shop is open
+        bool shopIsOpen = !shopPanel.activeSelf;
+        shopPanel.SetActive(shopIsOpen);
+        Time.timeScale = shopIsOpen ? 0 : 1;
+
+        Cursor.visible = shopIsOpen;
+        Cursor.lockState = shopIsOpen ? CursorLockMode.None : CursorLockMode.Locked;
+
+        if (playerCameraRotator != null)
+        {
+            playerCameraRotator.enabled = !shopIsOpen;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -115,7 +250,27 @@ public class ShopManager : MonoBehaviour
         {
             isPlayerInRange = false;
             shopPanel.SetActive(false);
-            Time.timeScale = 1; // Resume game
+            Time.timeScale = 1;
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+
+            if (playerCameraRotator != null)
+            {
+                playerCameraRotator.enabled = true;
+            }
+        }
+    }
+
+    public void CloseShop()
+    {
+        shopPanel.SetActive(false);
+        Time.timeScale = 1;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        if (playerCameraRotator != null)
+        {
+            playerCameraRotator.enabled = true;
         }
     }
 }

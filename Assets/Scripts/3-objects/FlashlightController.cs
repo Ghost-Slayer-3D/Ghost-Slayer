@@ -53,7 +53,7 @@ public class FlashlightController : MonoBehaviour
     [Tooltip("Animator component for the character.")]
     [SerializeField] private Animator animator;
 
-    private float beamTimer = 0f;
+    private float beamTimer = 0.5f;
     private bool isBeamActive = false;
 
     private float defaultLightRange;
@@ -106,13 +106,19 @@ public class FlashlightController : MonoBehaviour
 
     private void TriggerFlashlight()
     {
-        if (GameManager.Instance.GetCurrentBatteries() <= 0)
+        if (!GameManager.Instance.IsUnlimitedBattery() && GameManager.Instance.GetCurrentBatteries() <= 0)
         {
+            Debug.Log("No batteries left to use the flashlight!");
             return;
         }
 
         ActivateFlashlightLight();
-        GameManager.Instance.UseBattery();
+
+        if (!GameManager.Instance.IsUnlimitedBattery())
+        {
+            GameManager.Instance.UseBattery();
+        }
+
         KillGhosts();
 
         if (animator != null)

@@ -178,10 +178,33 @@ public class CharacterKeyboardMover : MonoBehaviour
         jumpMultiplier += multiplier;
     }
 
-    public void EnableInvisibility()
+    public void EnableInvisibility(float duration = 120f)
     {
+        if (isInvisible)
+        {
+            Debug.Log("Invisibility is already active!");
+            return;
+        }
+
         isInvisible = true;
-        // Trigger invisibility logic
+        Debug.Log($"Player is now invisible for {duration} seconds!");
+
+        // Notify GameManager about invisibility state
+        GameManager.Instance.SetPlayerInvisible(true);
+
+        // Start coroutine to disable invisibility after the duration
+        StartCoroutine(DisableInvisibilityAfterTime(duration));
+    }
+
+    private IEnumerator DisableInvisibilityAfterTime(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        isInvisible = false;
+        Debug.Log("Invisibility has ended!");
+
+        // Notify GameManager about invisibility state
+        GameManager.Instance.SetPlayerInvisible(false);
     }
 
     public void EnableUnlimitedBattery()

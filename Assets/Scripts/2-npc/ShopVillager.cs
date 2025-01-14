@@ -37,7 +37,11 @@ public class ShopVillager : Villager
 
         Debug.Log("Opening shop panel for " + gameObject.name);
         shopPanel.SetActive(true);
-        Time.timeScale = 0; // Pause the game when the shop is open
+
+        // Pause the game and show the cursor
+        Time.timeScale = 0;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void CloseShop()
@@ -50,6 +54,10 @@ public class ShopVillager : Villager
 
         Debug.Log("Closing shop panel for " + gameObject.name);
         shopPanel.SetActive(false);
-        Time.timeScale = 1; // Resume the game when the shop is closed
+
+        // Resume the game and hide the cursor
+        Time.timeScale = 1;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 }
