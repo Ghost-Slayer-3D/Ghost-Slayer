@@ -25,8 +25,8 @@ public class EnemyControllerStateMachine : StateMachine
         base
             .AddState(patroller)     // This would be the first active state.
             .AddState(chaser)
-            .AddTransition(patroller, () => DistanceToTarget() <= radiusToWatch, chaser)
-            .AddTransition(chaser, () => DistanceToTarget() > radiusToWatch, patroller);
+            .AddTransition(patroller, () => DistanceToTarget() <= radiusToWatch && !GameManager.Instance.IsPlayerInvisible(), chaser)
+            .AddTransition(chaser, () => DistanceToTarget() > radiusToWatch || GameManager.Instance.IsPlayerInvisible(), patroller);
     }
 
     private void OnDrawGizmosSelected()

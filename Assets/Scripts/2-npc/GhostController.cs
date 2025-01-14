@@ -3,15 +3,19 @@ using UnityEngine;
 public class GhostController : MonoBehaviour
 {
     [Header("Ghost Settings")]
-    [SerializeField] private int health = 1;                 // Ghost health (can be extended later).
-    [SerializeField] private int damage = 1;                 // Damage dealt to player on collision.
-    [SerializeField] private GameObject deathEffect;         // Visual effect for death.
+    [SerializeField] private int health = 1; // Ghost health (can be extended later).
+    [SerializeField] private int damage = 1; // Damage dealt to player on collision.
+    [SerializeField] private GameObject deathEffect; // Visual effect for death.
+
     private bool isPlayerInvisible = false;
-    private bool isDead = false;                             // Tracks if the ghost is already dead.
+    private bool isDead = false; // Tracks if the ghost is already dead.
 
     public void TakeDamage()
     {
-        if (isDead) return; // Prevent duplicate hits
+        if (isDead)
+        {
+            return; // Prevent duplicate hits
+        }
 
         health--;
 
@@ -28,7 +32,10 @@ public class GhostController : MonoBehaviour
 
     private void Die()
     {
-        if (isDead) return;
+        if (isDead)
+        {
+            return;
+        }
 
         isDead = true;
 
@@ -59,10 +66,11 @@ public class GhostController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (isPlayerInvisible){
+        if (isPlayerInvisible)
+        {
             Die();
             return; // Do nothing if the player is invisible
-        } 
+        }
 
         if (collision.gameObject.CompareTag("Player"))
         {
