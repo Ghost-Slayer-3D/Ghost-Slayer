@@ -1,5 +1,5 @@
 using UnityEngine;
-using TMPro; // Import TextMeshPro namespace
+using TMPro;
 
 public class Villager : MonoBehaviour
 {
@@ -13,7 +13,7 @@ public class Villager : MonoBehaviour
         // Hide text initially
         if (interactionText != null)
         {
-            interactionText.gameObject.SetActive(false); // Make sure it's inactive at the start
+            interactionText.gameObject.SetActive(false);
         }
         else
         {
@@ -21,7 +21,6 @@ public class Villager : MonoBehaviour
         }
     }
 
-    // Called by Player Interaction script
     public virtual void Interact()
     {
         if (!isInteracting)
@@ -32,15 +31,21 @@ public class Villager : MonoBehaviour
 
     private void ShowMessage()
     {
-        // Display the pre-set message above the villager
+        // Display 3D text above the villager
         if (interactionText != null)
         {
-            interactionText.gameObject.SetActive(true); // Show the text
+            interactionText.gameObject.SetActive(true);
+        }
+
+        // Update the global canvas text
+        if (interactionText != null)
+        {
+            GlobalInteractionText.Instance?.UpdateMessage(interactionText.text);
         }
 
         isInteracting = true;
 
-        // Hide the text after display duration
+        // Hide the 3D text after display duration
         Invoke(nameof(HideMessage), displayDuration);
     }
 
@@ -48,8 +53,7 @@ public class Villager : MonoBehaviour
     {
         if (interactionText != null)
         {
-            interactionText.gameObject.SetActive(false); // Hide the text
-            Debug.Log($"Hiding text for {gameObject.name}");
+            interactionText.gameObject.SetActive(false);
         }
 
         isInteracting = false;

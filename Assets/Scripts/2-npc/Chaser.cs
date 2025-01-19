@@ -63,7 +63,7 @@ public class Chaser : MonoBehaviour
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
             lookRotation,
-            Time.deltaTime * 5
+            Time.deltaTime * 4
         );
     }
 
