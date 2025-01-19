@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     private bool isUnlimitedHP = false; // Tracks Unlimited HP buff
     private bool isUnlimitedBattery = false; // Tracks Unlimited Battery buff
     private const string MainMenuMessageKey = "MainMenuMessage";
+
     // HUD Update Event
     public delegate void OnHUDUpdate();
     public event OnHUDUpdate onHUDUpdateCallback;
@@ -183,11 +184,11 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.Save();
 
         Debug.Log(message);
-        
+
         // Show the cursor
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        
+
         // Load the MainMenu scene
         SceneManager.LoadScene("MainMenu");
     }
