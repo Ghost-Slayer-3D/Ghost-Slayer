@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 498253721416304272, guid: f6ab88624626d1249bd73bcb4a1c7d59,
         type: 3}
       propertyPath: m_Name
-      value: Ghost
+      value: Ghost 1
       objectReference: {fileID: 0}
     - target: {fileID: 498253721416304299, guid: f6ab88624626d1249bd73bcb4a1c7d59,
         type: 3}
@@ -66,7 +66,7 @@ PrefabInstance:
     - target: {fileID: 2506679584162442533, guid: f6ab88624626d1249bd73bcb4a1c7d59,
         type: 3}
       propertyPath: radiusToWatch
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4454310201671904138, guid: f6ab88624626d1249bd73bcb4a1c7d59,
         type: 3}
@@ -74,6 +74,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7518165538999199939, guid: b5f7b5c0d88dae149bf94f18fb43534a,
         type: 3}
+    - target: {fileID: 9006859567387174618, guid: f6ab88624626d1249bd73bcb4a1c7d59,
+        type: 3}
+      propertyPath: patrolRadius
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 9006859567387174618, guid: f6ab88624626d1249bd73bcb4a1c7d59,
         type: 3}
       propertyPath: maxWaitAtTarget
