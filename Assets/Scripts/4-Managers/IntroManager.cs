@@ -38,7 +38,7 @@ public class IntroManager : MonoBehaviour
         // Ensure the text starts below the screen
         if (textTransform != null)
         {
-            textTransform.anchoredPosition = new Vector2(0, -Screen.height + Screen.height/10);
+            textTransform.anchoredPosition = new Vector2(0, -Screen.height + Screen.height / 10);
         }
     }
 
