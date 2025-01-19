@@ -43,13 +43,19 @@ public class SwitchCounterManager : MonoBehaviour
         }
     }
 
-    /**
-     * Called when all switches are activated.
-     */
     private void OnAllSwitchesActivated()
     {
-        // Display win message in the UI
-        UIManager.Instance.ShowWinMessage();
+        Debug.Log("All switches activated!");
+
+        // Notify the GameManager about the win condition
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.HandleGameOutcome(true); // Player won
+        }
+        else
+        {
+            Debug.LogWarning("GameManager instance not found. Cannot handle win condition.");
+        }
     }
 
     /**

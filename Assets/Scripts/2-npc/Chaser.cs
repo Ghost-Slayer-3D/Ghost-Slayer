@@ -8,11 +8,11 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Chaser : MonoBehaviour
 {
-    [Tooltip("The object that this enemy chases after")]
-    [SerializeField] private GameObject player = null;
+    [Tooltip("The transform of the player to chase (e.g., PlayerBody)")]
+    [SerializeField] private Transform targetTransform = null;
 
     [Header("These fields are for display only")]
-    [SerializeField] private Vector3 playerPosition;
+    [SerializeField] private Vector3 targetPosition;
 
     private Animator animator;
     private NavMeshAgent navMeshAgent;
@@ -21,18 +21,42 @@ public class Chaser : MonoBehaviour
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+
+        // Automatically find the target transform
+        if (targetTransform == null)
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null)
+            {
+                // Assign the transform of the player
+                targetTransform = player.transform;
+            }
+            else
+            {
+                Debug.LogError("Player not found! Make sure your player object is tagged as 'Player'.");
+            }
+        }
     }
 
     private void Update()
     {
-        playerPosition = player.transform.position;
+        if (targetTransform == null)
+        {
+            Debug.LogWarning("Target Transform is not assigned or found!");
+            return;
+        }
+
+        // Update target position
+        targetPosition = targetTransform.position;
+
+        // Chase the player
         FacePlayer();
-        navMeshAgent.destination = playerPosition;
+        navMeshAgent.destination = targetPosition;
     }
 
     private void FacePlayer()
     {
-        Vector3 direction = (playerPosition - transform.position).normalized;
+        Vector3 direction = (targetPosition - transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
 
         // Smoothly rotate towards the player
@@ -45,19 +69,12 @@ public class Chaser : MonoBehaviour
 
     internal Vector3 TargetObjectPosition()
     {
-        return player.transform.position;
-    }
+        if (targetTransform == null)
+        {
+            Debug.LogWarning("Target Transform is not assigned!");
+            return transform.position; // Default to current position if target is missing
+        }
 
-    private void FaceDirection()
-    {
-        Vector3 direction = (navMeshAgent.destination - transform.position).normalized;
-        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-
-        // Smoothly rotate towards the destination
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            lookRotation,
-            Time.deltaTime * 5
-        );
+        return targetTransform.position;
     }
 }

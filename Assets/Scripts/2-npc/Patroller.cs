@@ -1,30 +1,23 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-/**
- * This component represents an NPC that patrols randomly between targets.
- * The targets are all the objects with a Target component inside a given folder.
- */
 [RequireComponent(typeof(NavMeshAgent))]
 public class Patroller : MonoBehaviour
 {
-    [Tooltip("Minimum time to wait at target between running to the next target")]
-    [SerializeField] private float minWaitAtTarget = 7f;
+    [Tooltip("Radius around the ghost within which it patrols randomly.")]
+    [SerializeField] private float patrolRadius = 10f;
 
-    [Tooltip("Maximum time to wait at target between running to the next target")]
-    [SerializeField] private float maxWaitAtTarget = 15f;
+    [Tooltip("Minimum time to wait at target before choosing a new destination.")]
+    [SerializeField] private float minWaitAtTarget = 3f;
 
-    [Tooltip("A game object whose children have a Target component. Each child represents a target.")]
-    [SerializeField] private Transform targetFolder = null;
-
-    private Target[] allTargets = null;
+    [Tooltip("Maximum time to wait at target before choosing a new destination.")]
+    [SerializeField] private float maxWaitAtTarget = 7f;
 
     [Header("For debugging")]
-    [SerializeField] private Target currentTarget = null;
     [SerializeField] private float timeToWaitAtTarget = 0;
 
     private NavMeshAgent navMeshAgent;
-    private Animator animator;
+    private Animator animator; // Optional, for animation
     private float rotationSpeed = 5f;
 
     private void Start()
@@ -32,40 +25,60 @@ public class Patroller : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
-        allTargets = targetFolder.GetComponentsInChildren<Target>(false); // false = get components in active children only
-
-        // Debug.Log("Found " + allTargets.Length + " active targets.");
-        SelectNewTarget();
-    }
-
-    private void SelectNewTarget()
-    {
-        currentTarget = allTargets[Random.Range(0, allTargets.Length - 1)];
-
-        // Debug.Log("New target: " + currentTarget.name);
-        navMeshAgent.destination = currentTarget.transform.position;
-
-        // if (animator) animator.SetBool("Run", true);
-        timeToWaitAtTarget = Random.Range(minWaitAtTarget, maxWaitAtTarget);
+        // Choose the first destination
+        SelectNewRandomDestination();
     }
 
     private void Update()
     {
-        if (navMeshAgent.hasPath)
+        if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance && !navMeshAgent.pathPending)
         {
-            FaceDestination();
+            // We are at the target
+            if (timeToWaitAtTarget <= 0)
+            {
+                SelectNewRandomDestination();
+            }
+            else
+            {
+                timeToWaitAtTarget -= Time.deltaTime;
+            }
         }
         else
         {
-            // We are at the target
-            // if (animator) animator.SetBool("Run", false);
-            timeToWaitAtTarget -= Time.deltaTime;
-
-            if (timeToWaitAtTarget <= 0)
-            {
-                SelectNewTarget();
-            }
+            // Rotate towards the destination for a natural look
+            FaceDestination();
         }
+    }
+
+    private void SelectNewRandomDestination()
+    {
+        // Generate a random point within the patrol radius
+        Vector3 randomPoint = GetRandomPointWithinRadius();
+
+        // Set the destination for the NavMeshAgent
+        navMeshAgent.SetDestination(randomPoint);
+
+        // Set the wait time for when the target is reached
+        timeToWaitAtTarget = Random.Range(minWaitAtTarget, maxWaitAtTarget);
+
+        // Debug: Visualize the chosen destination
+        Debug.Log($"New random destination: {randomPoint}");
+    }
+
+    private Vector3 GetRandomPointWithinRadius()
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
+        randomDirection += transform.position; // Offset by the current position
+        randomDirection.y = transform.position.y; // Keep the Y coordinate consistent
+
+        // Check if the point is on the NavMesh
+        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, patrolRadius, NavMesh.AllAreas))
+        {
+            return hit.position;
+        }
+
+        // Fallback: Use the current position if no valid point is found
+        return transform.position;
     }
 
     private void FaceDestination()
@@ -81,5 +94,12 @@ public class Patroller : MonoBehaviour
             lookRotation,
             Time.deltaTime * rotationSpeed
         );
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        // Draw the patrol radius in the editor
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, patrolRadius);
     }
 }

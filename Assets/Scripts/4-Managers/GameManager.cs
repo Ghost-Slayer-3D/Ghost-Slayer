@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     private bool isPlayerInvisible = false;
     private bool isUnlimitedHP = false; // Tracks Unlimited HP buff
     private bool isUnlimitedBattery = false; // Tracks Unlimited Battery buff
-
+    private const string MainMenuMessageKey = "MainMenuMessage";
     // HUD Update Event
     public delegate void OnHUDUpdate();
     public event OnHUDUpdate onHUDUpdateCallback;
@@ -124,11 +124,8 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Game Over!");
 
-        // Show the cursor
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-
-        SceneManager.LoadScene("MainMenu");
+        // Notify the MainMenu with a lose message
+        HandleGameOutcome(false); // Player lost
     }
 
     public void SetPlayerInvisible(bool state)
@@ -175,5 +172,23 @@ public class GameManager : MonoBehaviour
     public bool IsUnlimitedBattery()
     {
         return isUnlimitedBattery;
+    }
+
+    public void HandleGameOutcome(bool isWin)
+    {
+        string message = isWin ? "You won! Play again?" : "You Lost! Try Again?";
+
+        // Save the message for the MainMenu
+        PlayerPrefs.SetString("MainMenuMessage", message);
+        PlayerPrefs.Save();
+
+        Debug.Log(message);
+        
+        // Show the cursor
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        
+        // Load the MainMenu scene
+        SceneManager.LoadScene("MainMenu");
     }
 }
