@@ -141,6 +141,7 @@ public class ShopManager : MonoBehaviour
                     if (TryPurchase(unlimitedBatteryPrice, "Unlimited Battery"))
                     {
                         playerMover.EnableUnlimitedBattery();
+                        GameManager.Instance.AddBattery(3);
                         GameManager.Instance.SetUnlimitedBattery(true);
                         unlimitedBatteryIndicator.gameObject.SetActive(true); // Show the indicator
                         Debug.Log("Bought Unlimited Battery Buff");

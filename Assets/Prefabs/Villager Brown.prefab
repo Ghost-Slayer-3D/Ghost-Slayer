@@ -1278,8 +1278,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactionText: {fileID: 0}
-  message: Hello!
-  isInteracting: 0
+  displayDuration: 3
 --- !u!136 &-5577266715992115222
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1299,10 +1298,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
+  m_Radius: 0.2921481
+  m_Height: 2.272547
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: -0.026824892, y: 0.6362735, z: -0.0088272095}
 --- !u!1 &6015490796334931559
 GameObject:
   m_ObjectHideFlags: 0
