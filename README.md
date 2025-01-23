@@ -62,9 +62,10 @@ For an in-depth look at gameplay elements and design, check the [Formal Elements
 
 For an analysis of dramatic elements and narrative, check the [Dramatic Elements](Dramatic-elements.md).
 
-
+---
 
 # Credits:
+
 flash light:
 https://assetstore.unity.com/packages/3d/props/electronics/free-flashlight-293680
 

@@ -95,7 +95,7 @@ public class CharacterKeyboardMover : MonoBehaviour
         }
 
         // Handle crouching
-        if (crouchAction.ReadValue<float>() > 0 && cc.isGrounded)
+        if (crouchAction.ReadValue<float>() > 0 && IsGrounded())
         {
             if (!isCrouching)
             {
@@ -112,7 +112,7 @@ public class CharacterKeyboardMover : MonoBehaviour
         }
 
         // Grounded movement
-        if (cc.isGrounded)
+        if (IsGrounded())
         {
             isJumping = false;
             velocity.y = 0;
@@ -155,7 +155,7 @@ public class CharacterKeyboardMover : MonoBehaviour
 
         animator.SetFloat("speed", horizontalSpeed);
         animator.SetFloat("verticalVelocity", velocity.y);
-        animator.SetBool("isGrounded", cc.isGrounded);
+        animator.SetBool("isGrounded", IsGrounded());
         animator.SetBool("isJumping", isJumping);
     }
 
@@ -211,5 +211,11 @@ public class CharacterKeyboardMover : MonoBehaviour
     {
         unlimitedBattery = true;
         // Trigger unlimited battery logic
+    }
+
+    private bool IsGrounded()
+    {
+        float groundCheckDistance = 0.1f; // Small distance above ground to detect
+        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
     }
 }

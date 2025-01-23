@@ -77,12 +77,12 @@ PrefabInstance:
     - target: {fileID: 9006859567387174618, guid: f6ab88624626d1249bd73bcb4a1c7d59,
         type: 3}
       propertyPath: maxWaitAtTarget
-      value: 1.5
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 9006859567387174618, guid: f6ab88624626d1249bd73bcb4a1c7d59,
         type: 3}
       propertyPath: minWaitAtTarget
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4657143671383099270, guid: f6ab88624626d1249bd73bcb4a1c7d59, type: 3}
