@@ -96,12 +96,8 @@ https://assetstore.unity.com/packages/3d/characters/humanoids/fantasy/stylized-n
 power ups:
 https://assetstore.unity.com/packages/3d/props/ten-power-ups-217666
 
-
 shop photo:
 https://www.shutterstock.com/image-vector/shop-game-interface-design-cartoon-vector-2359830845
-
-main menu audio:
-https://pixabay.com/sound-effects/village-theme-68229/
 
 Sold Out asset:
 https://www.flaticon.com/free-icon/sold-out_6050776
@@ -141,3 +137,13 @@ https://www.google.com/url?sa=i&url=https%3A%2F%2Fleadgenapp.io%2Fzapier-integra
 
 Ghosts
 https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.shutterstock.com/video/search/horrified-ghost&ved=2ahUKEwjPusy2l4eLAxUUBdsEHZQbI-AQ6vUJegUIlwEQAA&usg=AOvVaw1A7z3RhaTaCyH0VLh4QG-j
+
+Ai's:
+https://chatgpt.com
+https://copilot.microsoft.com
+
+Audios:
+https://pixabay.com/sound-effects/village-theme-68229/
+https://pixabay.com/sound-effects/village-at-morning-78119/
+https://pixabay.com/sound-effects/winter-winds-7077/
+https://pixabay.com/sound-effects/crowd-noise-284490/
