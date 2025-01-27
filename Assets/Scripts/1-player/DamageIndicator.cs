@@ -5,7 +5,7 @@ public class DamageIndicator : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private GameObject damageTextPrefab; // Prefab for floating text
-    [SerializeField] private Vector3 offset = new Vector3(0, 1, 0); // Offset above the player
+    [SerializeField] private Vector3 offset = new Vector3(0f, 1f, 0f); // Offset above the player
     [SerializeField] private Transform targetPart; // Transform for the specific part (e.g., head or custom target)
 
     public void ShowDamage(string text, Color color)
