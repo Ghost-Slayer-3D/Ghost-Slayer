@@ -149,7 +149,7 @@ public class CharacterKeyboardMover : MonoBehaviour
 
         // Adjust animation speed
         animator.speed = animationSpeedMultiplier;
-    
+
         // Handle invisibility visual effect
         UpdateInvisibilityEffect();
     }
