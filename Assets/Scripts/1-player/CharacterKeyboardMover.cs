@@ -25,6 +25,10 @@ public class CharacterKeyboardMover : MonoBehaviour
     [Tooltip("Speed multiplier while crouching.")]
     [SerializeField] private float crouchSpeedMultiplier = 0.2f;
 
+    [Header("Animation Speed Settings")]
+    [Tooltip("Base animation speed multiplier (e.g., 1.0 for normal speed, 2.0 for double speed).")]
+    [SerializeField] private float animationSpeedMultiplier = 1.5f;
+
     // Shop-purchased upgrades
     private float speedMultiplier = 1.0f;
     private float jumpMultiplier = 1.0f;
@@ -143,6 +147,9 @@ public class CharacterKeyboardMover : MonoBehaviour
         // Update Animator parameters
         UpdateAnimatorParameters();
 
+        // Adjust animation speed
+        animator.speed = animationSpeedMultiplier;
+    
         // Handle invisibility visual effect
         UpdateInvisibilityEffect();
     }

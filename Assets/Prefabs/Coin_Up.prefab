@@ -140,10 +140,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.9294409
-  m_Height: 3.8588817
+  m_Radius: 2.823782
+  m_Height: 5.6475644
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0, z: -0.287962}
 --- !u!114 &1281769704249895236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,4 +158,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupType: 2
   value: 1
-  pickupEffect: {fileID: 0}
