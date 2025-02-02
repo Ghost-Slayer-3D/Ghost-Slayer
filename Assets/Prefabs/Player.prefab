@@ -2252,14 +2252,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77911510e77ffa1458d14803cc23fadc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
-  gravity: 15
-  jumpHeight: 3
+  baseSpeed: 3.5
+  baseGravity: 9.81
+  baseJumpHeight: 3
   runMultiplier: 20
-  crouchHeight: 1
-  normalHeight: 2
   crouchSpeedMultiplier: 0.2
-  speedText: {fileID: 0}
+  animationSpeedMultiplier: 1.5
   moveAction:
     m_Name: Move
     m_Type: 0
@@ -2434,6 +2432,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactionRange: 5
+  interactionText: {fileID: 0}
 --- !u!95 &2699322399744350518
 Animator:
   serializedVersion: 7

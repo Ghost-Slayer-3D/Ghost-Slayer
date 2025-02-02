@@ -60,9 +60,6 @@ public class Patroller : MonoBehaviour
 
         // Set the wait time for when the target is reached
         timeToWaitAtTarget = Random.Range(minWaitAtTarget, maxWaitAtTarget);
-
-        // Debug: Visualize the chosen destination
-        Debug.Log($"New random destination: {randomPoint}");
     }
 
     private Vector3 GetRandomPointWithinRadius()

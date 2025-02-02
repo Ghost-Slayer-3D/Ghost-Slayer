@@ -222,7 +222,16 @@ public class CharacterKeyboardMover : MonoBehaviour
 
     private bool IsGrounded()
     {
-        float groundCheckDistance = 0.1f; // Small distance above ground to detect
-        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
+        float groundCheckDistance = 0.2f;
+        Vector3 origin = transform.position + Vector3.up * 0.1f; // Start slightly above ground
+
+        // Multi-ray ground check
+        bool centerCheck = Physics.Raycast(origin, Vector3.down, groundCheckDistance);
+        bool frontCheck = Physics.Raycast(origin + transform.forward * 0.3f, Vector3.down, groundCheckDistance);
+        bool backCheck = Physics.Raycast(origin - transform.forward * 0.3f, Vector3.down, groundCheckDistance);
+        bool leftCheck = Physics.Raycast(origin - transform.right * 0.3f, Vector3.down, groundCheckDistance);
+        bool rightCheck = Physics.Raycast(origin + transform.right * 0.3f, Vector3.down, groundCheckDistance);
+
+        return centerCheck || frontCheck || backCheck || leftCheck || rightCheck;
     }
 }
